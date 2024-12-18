@@ -1,0 +1,8 @@
+fill-labs.dependi
+hbenl.vscode-test-explorer
+jscearcy.rust-doc-viewer
+ms-vscode.test-adapter-converter
+rust-lang.rust-analyzer
+swellaby.vscode-rust-test-adapter
+tamasfe.even-better-toml
+vadimcn.vscode-lldb
