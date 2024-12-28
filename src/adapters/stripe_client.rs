@@ -1,7 +1,8 @@
-use stripe::{Client, CreatePaymentIntent, PaymentIntent, CreateCustomer, Customer, Currency};
 use async_trait::async_trait;
-use crate::application::ports::StripePort;
+use stripe::{Client, CreatePaymentIntent, PaymentIntent, CreateCustomer, Customer, Currency};
+use crate::application::ports::stripe::StripePort;
 
+#[derive(Clone)]
 pub struct StripeClient {
     client: Client,
 }
@@ -27,9 +28,9 @@ impl StripePort for StripeClient {
 
     async fn create_customer(&self, email: String, name: Option<String>) -> Result<Customer, String> {
         let mut params = CreateCustomer::new();
-        params.email = Some(email);
+        params.email = Some(&email);
         if let Some(name) = name {
-            params.name = Some(name);
+            params.name = Some(Box::leak(name.into_boxed_str()));
         }
 
         Customer::create(&self.client, params)
