@@ -1,3 +1,3 @@
-pub mod stripe;
+pub mod ports;
+pub mod usecase;
 
-pub use stripe::StripePort;

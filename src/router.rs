@@ -1,8 +1,9 @@
-use axum::{Router, routing::get};
-use crate::handlers;
+use axum::{Router, routing::post, routing::get};
+use crate::handlers::{customer::handle_create_customer, payment::handle_payment};
 
 pub fn create_router() -> Router {
-    Router::new()
+    Router::new() 
         .route("/", get(|| async { "Hello, World!" }))
-        .merge(handlers::payment::router())
+        .route("/payment", post(handle_payment))
+        .route("/customer", post(handle_create_customer))
 }

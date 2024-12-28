@@ -1,5 +1,7 @@
 mod router;
 mod handlers;
+mod adapters;
+mod application;
 
 use tracing::info;
 use tracing_subscriber;
