@@ -8,6 +8,7 @@ use crate::adapters::stripe_client::StripeClient;
 #[derive(Deserialize)]
 pub struct CustomerRequest {
     pub email: String,
+    pub token: String,
     pub name: Option<String>,
 }
 
@@ -26,7 +27,7 @@ pub async fn handle_create_customer(Json(payload): Json<CustomerRequest>) -> imp
     let customer_usecase = CreateStripeCustomerUseCase::new(stripe_client);
 
     match customer_usecase
-        .execute(payload.email.clone(), payload.name.clone())
+        .execute(payload.email.clone(), payload.token.clone(), payload.name.clone())
         .await
     {
         Ok(customer_id) => Json(CustomerResponse {

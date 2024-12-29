@@ -1,4 +1,5 @@
 use async_trait::async_trait;
+use std::str::FromStr;
 use stripe::{Client, CreatePaymentIntent, PaymentIntent, CreateCustomer, Customer, Currency};
 use crate::application::ports::stripe::StripePort;
 
@@ -26,11 +27,23 @@ impl StripePort for StripeClient {
             .map_err(|err| format!("Stripe API error: {}", err))
     }
 
-    async fn create_customer(&self, email: String, name: Option<String>) -> Result<Customer, String> {
+    async fn create_customer(&self, email: String, token: String, name: Option<String>) -> Result<Customer, String> {
         let mut params = CreateCustomer::new();
         params.email = Some(&email);
+        let description = format!("Customer for {}", email);
+        params.description = Some(&description);
         if let Some(name) = name {
             params.name = Some(Box::leak(name.into_boxed_str()));
+        }
+ 
+        match stripe::CardTokenId::from_str(&token) {
+            Ok(card_token_id) => {
+                let token_id = stripe::TokenId::Card(card_token_id);
+                params.source = Some(stripe::PaymentSourceParams::Token(token_id));
+            }
+            Err(_) => {
+                return Err("Invalid card token ID".to_string());
+            }
         }
 
         Customer::create(&self.client, params)

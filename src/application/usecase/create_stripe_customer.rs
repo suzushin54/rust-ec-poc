@@ -13,11 +13,12 @@ impl<P: StripePort> CreateStripeCustomerUseCase<P> {
     pub async fn execute(
         &self,
         email: String,
+        token: String,
         name: Option<String>,
     ) -> Result<String, String> {
         let customer = self
             .stripe_port
-            .create_customer(email, name)
+            .create_customer(email, token, name)
             .await
             .map_err(|e| format!("Failed to create customer: {}", e))?;
         Ok(customer.id.to_string())
