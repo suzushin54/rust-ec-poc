@@ -27,7 +27,7 @@ impl StripePort for StripeClient {
             .map_err(|err| format!("Stripe API error: {}", err))
     }
 
-    async fn create_customer(&self, email: String, token: String, name: Option<String>) -> Result<Customer, String> {
+    async fn create_customer(&self, email: String, token: Option<String>, name: Option<String>) -> Result<Customer, String> {
         let mut params = CreateCustomer::new();
         params.email = Some(&email);
         let description = format!("Customer for {}", email);
@@ -36,13 +36,15 @@ impl StripePort for StripeClient {
             params.name = Some(Box::leak(name.into_boxed_str()));
         }
  
-        match stripe::CardTokenId::from_str(&token) {
-            Ok(card_token_id) => {
-                let token_id = stripe::TokenId::Card(card_token_id);
-                params.source = Some(stripe::PaymentSourceParams::Token(token_id));
-            }
-            Err(_) => {
-                return Err("Invalid card token ID".to_string());
+        if let Some(ref token_str) = token {
+            match stripe::CardTokenId::from_str(token_str) {
+                Ok(card_token_id) => {
+                    let token_id = stripe::TokenId::Card(card_token_id);
+                    params.source = Some(stripe::PaymentSourceParams::Token(token_id));
+                }
+                Err(_) => {
+                    return Err("Invalid card token ID".to_string());
+                }
             }
         }
 

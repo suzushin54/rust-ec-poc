@@ -8,7 +8,7 @@ use crate::adapters::stripe_client::StripeClient;
 #[derive(Deserialize)]
 pub struct CustomerRequest {
     pub email: String,
-    pub token: String,
+    pub token: Option<String>,
     pub name: Option<String>,
 }
 

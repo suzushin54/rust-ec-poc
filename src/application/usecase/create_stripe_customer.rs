@@ -13,7 +13,7 @@ impl<P: StripePort> CreateStripeCustomerUseCase<P> {
     pub async fn execute(
         &self,
         email: String,
-        token: String,
+        token: Option<String>,
         name: Option<String>,
     ) -> Result<String, String> {
         let customer = self
