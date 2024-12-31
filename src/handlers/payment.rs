@@ -8,6 +8,7 @@ use std::env;
 #[derive(Deserialize)]
 pub struct PaymentRequest {
     pub amount: i64,
+    pub customer_id: String,
 }
 
 #[derive(Serialize)]
@@ -24,7 +25,7 @@ pub async fn handle_payment(Json(payload): Json<PaymentRequest>) -> impl IntoRes
     let payment_usecase = PaymentUseCase::new(stripe_client);
 
     match payment_usecase
-        .execute(payload.amount)
+        .execute(payload.amount, payload.customer_id)
         .await
     {
         Ok(payment_id) => Json(PaymentResponse {
