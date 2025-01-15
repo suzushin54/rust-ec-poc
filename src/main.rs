@@ -2,7 +2,12 @@ mod router;
 mod handlers;
 mod adapters;
 mod application;
+mod state;
 
+use dotenv::dotenv;
+use std::env;
+use crate::state::AppState;
+use crate::adapters::stripe_client::StripeClient;
 use tracing::info;
 use tracing_subscriber;
 
@@ -15,8 +20,12 @@ async fn main() {
 
     info!("Starting the server...");
 
-    // build our application with a single route
-    let app = router::create_router();
+    dotenv().ok();
+    let secret_key = env::var("STRIPE_SECRET_KEY").expect("STRIPE_SECRET_KEY not set");
+    let stripe_client = StripeClient::new(secret_key);
+    
+    let state = AppState::new(stripe_client);
+    let app = router::create_router(state);
 
     let address = "0.0.0.0:8080";
     info!("Listening on {}", address);

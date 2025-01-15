@@ -1,10 +1,8 @@
-use axum::{Json, response::IntoResponse};
+use axum::{Json, response::IntoResponse, extract::State};
 use serde::{Deserialize, Serialize};
 use std::str::FromStr;
-use dotenv::dotenv;
-use std::env;
 use crate::application::usecase::create_payment::{PaymentUseCase, PaymentMethod};
-use crate::adapters::stripe_client::StripeClient;
+use crate::state::AppState;
 
 #[derive(Deserialize)]
 pub struct PaymentRequest {
@@ -33,12 +31,11 @@ impl FromStr for PaymentMethod {
     }
 }
 
-#[axum::debug_handler]
-pub async fn handle_payment(Json(payload): Json<PaymentRequest>) -> impl IntoResponse {
-    dotenv().ok();
-    let secret_key = env::var("STRIPE_SECRET_KEY").expect("STRIPE_SECRET_KEY not set");
-    let stripe_client = StripeClient::new(secret_key);
-    let payment_usecase = PaymentUseCase::new(stripe_client);
+pub async fn handle_payment(
+    State(state): State<AppState>,
+    Json(payload): Json<PaymentRequest>,
+) -> impl IntoResponse {
+    let payment_usecase = PaymentUseCase::new(state.stripe_client);
 
     // Convert payment_method to PaymentMethod enum
     let payment_method = match PaymentMethod::from_str(&payload.payment_method) {

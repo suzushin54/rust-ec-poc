@@ -1,9 +1,7 @@
-use axum::{Json, response::IntoResponse};
+use axum::{Json, response::IntoResponse, extract::State};
 use serde::{Deserialize, Serialize};
-use dotenv::dotenv;
-use std::env;
 use crate::application::usecase::create_stripe_customer::CreateStripeCustomerUseCase;
-use crate::adapters::stripe_client::StripeClient;
+use crate::state::AppState;
 
 #[derive(Deserialize)]
 pub struct CustomerRequest {
@@ -19,12 +17,11 @@ pub struct CustomerResponse {
     pub customer_id: Option<String>,
 }
 
-pub async fn handle_create_customer(Json(payload): Json<CustomerRequest>) -> impl IntoResponse {
-    // NOTE: stateで受け取っても良いが、サブルーターにしないと無関係の処理でも受け取ってしまうため検討
-    dotenv().ok();
-    let secret_key = env::var("STRIPE_SECRET_KEY").expect("STRIPE_SECRET_KEY not set");
-    let stripe_client = StripeClient::new(secret_key);
-    let customer_usecase = CreateStripeCustomerUseCase::new(stripe_client);
+pub async fn handle_create_customer(
+    State(state): State<AppState>,
+    Json(payload): Json<CustomerRequest>,
+) -> impl IntoResponse {
+    let customer_usecase = CreateStripeCustomerUseCase::new(state.stripe_client);
 
     match customer_usecase
         .execute(payload.email.clone(), payload.token.clone(), payload.name.clone())
