@@ -1,0 +1,20 @@
+FROM rust:1.84.0-slim-bullseye as builder
+
+WORKDIR /app
+
+RUN apt-get update && \
+    apt-get install -y pkg-config libssl-dev && \
+    cargo install cargo-watch
+
+# Cache dependencies by pre-building with a dummy main.rs
+# - Creates a minimal "fn main() {}" to satisfy cargo build
+# - Caches dependencies for faster subsequent builds
+COPY Cargo.toml Cargo.lock ./
+RUN mkdir src && \
+    echo "fn main() {}" > src/main.rs && \
+    cargo build && \
+    rm -rf src
+
+COPY . .
+
+CMD ["cargo", "watch", "-x", "run"] 
