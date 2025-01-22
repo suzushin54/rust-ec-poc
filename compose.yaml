@@ -13,6 +13,19 @@ services:
       - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
       - RUST_LOG=debug
     
+  mysql:
+    image: mysql:8.0.40
+    restart: always
+    env_file: .env
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./docker/mysql/my.cnf:/etc/mysql/conf.d/my.cnf
+      - ./docker/mysql/authentication.cnf:/etc/mysql/conf.d/authentication.cnf
+      - ./docker/mysql/init:/docker-entrypoint-initdb.d
+    ports:
+      - 23306:3306
+
 volumes:
   cargo-cache:
-  target-cache: 
+  target-cache:
+  mysql-data:
