@@ -10,10 +10,14 @@ RUN apt-get update && \
 # - Creates a minimal "fn main() {}" to satisfy cargo build
 # - Caches dependencies for faster subsequent builds
 COPY Cargo.toml Cargo.lock ./
-RUN mkdir src && \
-    echo "fn main() {}" > src/main.rs && \
+COPY shop/Cargo.toml ./shop/
+COPY management/Cargo.toml ./management/
+
+RUN mkdir -p shop/src management/src && \
+    echo "fn main() {}" > shop/src/main.rs && \
+    echo "pub fn init() {}" > management/src/lib.rs && \
     cargo build && \
-    rm -rf src
+    rm -rf shop/src management/src
 
 COPY . .
 

@@ -1,0 +1,18 @@
+[package]
+name = "shop"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+axum = { version = "0.7.9", features = ["macros"] }
+futures-macro = "0.3.30"
+tokio = { version = "1", features = ["full", "macros", "rt-multi-thread"] }
+async-stripe = { version = "0.39.1", features = ["runtime-tokio-hyper"] }
+hyper = "1.5.2"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+tracing = "0.1"
+tracing-subscriber = "0.3"
+dotenv = "0.15"
+# aws-sdk-s3 = "1.66.0"
+async-trait = "0.1.83"
