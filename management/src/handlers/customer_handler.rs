@@ -1,0 +1,26 @@
+use crate::application::usecase::customer_usecase::CustomerUseCase;
+use crate::application::ports::customer_port::CustomerRepository;
+
+pub struct CustomerHandler<R: CustomerRepository> {
+    usecase: CustomerUseCase<R>,
+}
+
+impl<R: CustomerRepository> CustomerHandler<R> {
+    pub fn new(usecase: CustomerUseCase<R>) -> Self {
+        Self { usecase }
+    }
+
+    pub async fn get_customer(&self, id: i32) -> Result<String, String> {
+        match self.usecase.get_customer(id).await {
+            Ok(customer) => Ok("Customer found".to_string()),
+            Err(e) => Err(e.to_string()),
+        }
+    }
+
+    pub async fn delete_customer(&self, id: i32) -> Result<String, String> {
+        match self.usecase.delete_customer(id).await {
+            Ok(_) => Ok("Customer deleted".to_string()),
+            Err(e) => Err(e.to_string()),
+        }
+    }
+} 
