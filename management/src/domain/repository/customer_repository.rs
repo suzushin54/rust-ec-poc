@@ -1,11 +1,11 @@
 use async_trait::async_trait;
-use crate::domain::model::customer::Customer;
+use crate::domain::entity::customer::Customer;
 
 #[async_trait]
 pub trait CustomerRepository {
-    async fn find_by_id(&self, id: i32) -> Result<Customer, Error>;
-    async fn update(&self, customer: &Customer) -> Result<(), Error>;
-    async fn delete(&self, id: i32) -> Result<(), Error>;
+    async fn find_by_id(&self, id: i32) -> Option<Customer>;
+    async fn update(&self, customer: &Customer);
+    async fn delete(&self, id: i32);
 }
 
 #[derive(thiserror::Error, Debug)]

@@ -1,5 +1,5 @@
 use async_trait::async_trait;
-use crate::domain::model::Customer;
+use crate::domain::entity::Customer;
 
 #[async_trait]
 pub trait CustomerRepository {
